@@ -45,24 +45,28 @@ if uploaded_file:
         st.subheader("📄 Generar Brochure en PDF")
 
         def generar_pdf(df_top):
-            pdf = FPDF()
-            pdf.add_page()
-            pdf.set_font("Arial", 'B', 16)
-            pdf.cell(200, 10, "Conferencia Internacional de Machine Learning 2026", ln=True, align="C")
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(200, 10, "Conferencia Internacional de Machine Learning 2026", ln=True, align="C")
 
-            pdf.set_font("Arial", '', 12)
-            pdf.cell(0, 10, "Autores principales:", ln=True)
-            for _, row in df_top.iterrows():
-                texto = f"{row['Authors']} - {row['publicaciones']} publicaciones, {row['citas']} citas"
-                pdf.cell(0, 10, texto, ln=True)
+    pdf.set_font("Arial", '', 12)
+    pdf.cell(0, 10, "Autores principales:", ln=True)
+    for _, row in df_top.iterrows():
+        autor = str(row['Authors'])
+        pubs = str(row['publicaciones'])
+        citas = str(row['citas'])
+        texto = f"{autor} - {pubs} publicaciones, {citas} citas"
+        pdf.cell(0, 10, texto, ln=True)  # usamos cell en vez de multi_cell
 
-            pdf.ln(10)
-            pdf.multi_cell(0, 10, "Institución: USIL & ISIL")
-            pdf.multi_cell(0, 10, "Sponsors: Google Cloud, Microsoft, IBM")
-            pdf.multi_cell(0, 10, "Certificación: 20 horas académicas")
-            pdf.multi_cell(0, 10, "Cronograma: Junio - Septiembre 2026")
+    pdf.ln(10)
+    pdf.cell(0, 10, "Institución: USIL & ISIL", ln=True)
+    pdf.cell(0, 10, "Sponsors: Google Cloud, Microsoft, IBM", ln=True)
+    pdf.cell(0, 10, "Certificación: 20 horas académicas", ln=True)
+    pdf.cell(0, 10, "Cronograma: Junio - Septiembre 2026", ln=True)
 
-            pdf.output("Brochure_Academico.pdf")
+    pdf.output("Brochure_Academico.pdf")
+
 
         if st.button("Generar PDF"):
             generar_pdf(top_authors)
