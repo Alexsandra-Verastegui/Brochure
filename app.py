@@ -59,7 +59,7 @@ if uploaded_file:
                 pubs = str(row['publicaciones'])
                 citas = str(row['citas'])
                 texto = f"{autor} - {pubs} publicaciones, {citas} citas"
-                pdf.cell(0, 10, texto, ln=True)  # usamos cell en vez de multi_cell
+                pdf.cell(0, 10, texto, ln=True)
 
             pdf.ln(10)
             pdf.cell(0, 10, "Institución: USIL & ISIL", ln=True)
@@ -71,7 +71,14 @@ if uploaded_file:
 
         if st.button("Generar PDF"):
             generar_pdf(top_authors)
-            st.success("✅ Brochure_Academico.pdf generado correctamente. Descárgalo desde tu carpeta de ejecución.")
+            with open("Brochure_Academico.pdf", "rb") as f:
+                st.download_button(
+                    label="📥 Descargar Brochure",
+                    data=f,
+                    file_name="Brochure_Academico.pdf",
+                    mime="application/pdf"
+                )
+            st.success("✅ Brochure_Academico.pdf generado correctamente.")
 
     else:
         st.error("El CSV debe contener las columnas 'Authors' y 'Cited by'.")
