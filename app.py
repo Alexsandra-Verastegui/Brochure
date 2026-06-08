@@ -5,7 +5,6 @@ from fpdf import FPDF
 st.set_page_config(page_title="Brochure Académico", layout="wide")
 st.title("📘 Automatización: Promoción de Evento Académico con IA")
 
-# --- SUBIR CSV ---
 uploaded_file = st.file_uploader("Sube el dataset (CSV con columnas Authors y Cited by)", type=["csv"])
 
 if uploaded_file:
@@ -13,7 +12,6 @@ if uploaded_file:
 
     st.subheader("📊 Análisis de Autores")
 
-    # Verificamos que existan las columnas necesarias
     if "Authors" in df.columns and "Cited by" in df.columns:
         # Agrupar por autor y calcular publicaciones y citas
         resumen = df.groupby("Authors").agg(
@@ -21,8 +19,11 @@ if uploaded_file:
             citas=("Cited by", "sum")
         ).reset_index()
 
+        # FILTRAR: solo autores con más de 1 publicación
+        resumen_filtrado = resumen[resumen["publicaciones"] > 1]
+
         # Ordenar primero por publicaciones y luego por citas
-        resumen_ordenado = resumen.sort_values(
+        resumen_ordenado = resumen_filtrado.sort_values(
             by=["publicaciones", "citas"],
             ascending=[False, False]
         )
@@ -43,9 +44,12 @@ if uploaded_file:
             pdf.cell(200, 10, "Conferencia Internacional de Machine Learning 2026", ln=True, align="C")
 
             pdf.set_font("Arial", '', 12)
+            pdf.cell(0, 10, "Autores principales:", ln=True)
             for _, row in df_top.iterrows():
-                pdf.multi_cell(0, 10, f"{row['Authors']} - {row['publicaciones']} publicaciones, {row['citas']} citas")
+                texto = f"{row['Authors']} - {row['publicaciones']} publicaciones, {row['citas']} citas"
+                pdf.cell(0, 10, texto, ln=True)
 
+            pdf.ln(10)
             pdf.multi_cell(0, 10, "Institución: USIL & ISIL")
             pdf.multi_cell(0, 10, "Sponsors: Google Cloud, Microsoft, IBM")
             pdf.multi_cell(0, 10, "Certificación: 20 horas académicas")
