@@ -2,9 +2,11 @@ import streamlit as st
 import pandas as pd
 from fpdf import FPDF
 
+# --- CONFIGURACIÓN DE LA APP ---
 st.set_page_config(page_title="Brochure Académico", layout="wide")
 st.title("📘 Automatización: Promoción de Evento Académico con IA")
 
+# --- SUBIR CSV ---
 uploaded_file = st.file_uploader("Sube el dataset (CSV con columnas Authors y Cited by)", type=["csv"])
 
 if uploaded_file:
@@ -29,7 +31,7 @@ if uploaded_file:
         # Filtrar autores con más de 1 publicación
         resumen_filtrado = resumen[resumen["publicaciones"] > 1]
 
-        # Ordenar por publicaciones y citas
+        # Ordenar por publicaciones y luego por citas
         resumen_ordenado = resumen_filtrado.sort_values(
             by=["publicaciones", "citas"],
             ascending=[False, False]
@@ -45,28 +47,27 @@ if uploaded_file:
         st.subheader("📄 Generar Brochure en PDF")
 
         def generar_pdf(df_top):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", 'B', 16)
-    pdf.cell(200, 10, "Conferencia Internacional de Machine Learning 2026", ln=True, align="C")
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Arial", 'B', 16)
+            pdf.cell(200, 10, "Conferencia Internacional de Machine Learning 2026", ln=True, align="C")
 
-    pdf.set_font("Arial", '', 12)
-    pdf.cell(0, 10, "Autores principales:", ln=True)
-    for _, row in df_top.iterrows():
-        autor = str(row['Authors'])
-        pubs = str(row['publicaciones'])
-        citas = str(row['citas'])
-        texto = f"{autor} - {pubs} publicaciones, {citas} citas"
-        pdf.cell(0, 10, texto, ln=True)  # usamos cell en vez de multi_cell
+            pdf.set_font("Arial", '', 12)
+            pdf.cell(0, 10, "Autores principales:", ln=True)
+            for _, row in df_top.iterrows():
+                autor = str(row['Authors'])
+                pubs = str(row['publicaciones'])
+                citas = str(row['citas'])
+                texto = f"{autor} - {pubs} publicaciones, {citas} citas"
+                pdf.cell(0, 10, texto, ln=True)  # usamos cell en vez de multi_cell
 
-    pdf.ln(10)
-    pdf.cell(0, 10, "Institución: USIL & ISIL", ln=True)
-    pdf.cell(0, 10, "Sponsors: Google Cloud, Microsoft, IBM", ln=True)
-    pdf.cell(0, 10, "Certificación: 20 horas académicas", ln=True)
-    pdf.cell(0, 10, "Cronograma: Junio - Septiembre 2026", ln=True)
+            pdf.ln(10)
+            pdf.cell(0, 10, "Institución: USIL & ISIL", ln=True)
+            pdf.cell(0, 10, "Sponsors: Google Cloud, Microsoft, IBM", ln=True)
+            pdf.cell(0, 10, "Certificación: 20 horas académicas", ln=True)
+            pdf.cell(0, 10, "Cronograma: Junio - Septiembre 2026", ln=True)
 
-    pdf.output("Brochure_Academico.pdf")
-
+            pdf.output("Brochure_Academico.pdf")
 
         if st.button("Generar PDF"):
             generar_pdf(top_authors)
