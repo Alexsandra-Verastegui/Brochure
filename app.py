@@ -13,16 +13,23 @@ if uploaded_file:
     st.subheader("📊 Análisis de Autores")
 
     if "Authors" in df.columns and "Cited by" in df.columns:
+        # Separar autores cuando vienen juntos con ;
+        df["Authors"] = df["Authors"].str.split(";")
+
+        # Expandir filas para que cada autor quede en una fila
+        df_exploded = df.explode("Authors")
+        df_exploded["Authors"] = df_exploded["Authors"].str.strip()
+
         # Agrupar por autor y calcular publicaciones y citas
-        resumen = df.groupby("Authors").agg(
+        resumen = df_exploded.groupby("Authors").agg(
             publicaciones=("Authors", "count"),
             citas=("Cited by", "sum")
         ).reset_index()
 
-        # Filtrar: solo autores con más de 1 publicación
+        # Filtrar autores con más de 1 publicación
         resumen_filtrado = resumen[resumen["publicaciones"] > 1]
 
-        # Ordenar por publicaciones y luego por citas
+        # Ordenar por publicaciones y citas
         resumen_ordenado = resumen_filtrado.sort_values(
             by=["publicaciones", "citas"],
             ascending=[False, False]
