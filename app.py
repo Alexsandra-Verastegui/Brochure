@@ -19,10 +19,10 @@ if uploaded_file:
             citas=("Cited by", "sum")
         ).reset_index()
 
-        # FILTRAR: solo autores con más de 1 publicación
+        # Filtrar: solo autores con más de 1 publicación
         resumen_filtrado = resumen[resumen["publicaciones"] > 1]
 
-        # Ordenar primero por publicaciones y luego por citas
+        # Ordenar por publicaciones y luego por citas
         resumen_ordenado = resumen_filtrado.sort_values(
             by=["publicaciones", "citas"],
             ascending=[False, False]
@@ -30,7 +30,7 @@ if uploaded_file:
 
         st.write(resumen_ordenado)
 
-        # Seleccionar los 3 principales
+        # Seleccionar los 3 principales automáticamente
         top_authors = resumen_ordenado.head(3)
         st.success(f"Autores principales: {', '.join(top_authors['Authors'])}")
 
