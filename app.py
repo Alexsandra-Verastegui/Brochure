@@ -27,7 +27,7 @@ def generar_brochure(top_authors):
 
     # ---------- IMÁGENES ----------
     robot = Image.open("assets/robot_ai.png").convert("RGBA")
-    robot = robot.resize((720,900))
+    robot = robot.resize((500,700))
 
     usil = Image.open("assets/logo_usil.jpg")
     usil = usil.resize((130, 130))
@@ -46,17 +46,20 @@ def generar_brochure(top_authors):
 
     fondo.paste(usil, (25, 20))
     fondo.paste(isil, (170, 20))
-    fondo.paste(robot,(500,80),robot)
+    fondo.paste(robot,(650,120),robot)
 
     draw.rounded_rectangle(
-    (10, 10, 340, 150),
+    (10,10,340,150),
     radius=20,
     fill="#EAEAEA"
 )
+
+fondo.paste(usil, (25,20))
+fondo.paste(isil, (170,20))
     
     # ---------- FUENTES ----------
     try:
-        titulo = ImageFont.truetype("arial.ttf", 55)
+        titulo = ImageFont.truetype("arial.ttf",70)
         subtitulo = ImageFont.truetype("arial.ttf", 28)
         texto = ImageFont.truetype("arial.ttf", 20)
     except:
@@ -86,6 +89,26 @@ def generar_brochure(top_authors):
         font=titulo
     )
 
+descripcion = """
+Explora. Aprende. Conecta. Transforma.
+
+Un encuentro académico internacional que
+reúne a los investigadores más influyentes
+identificados mediante análisis bibliométrico.
+
+Los ponentes compartirán avances en
+Machine Learning, Inteligencia Artificial
+y Ciencia de Datos.
+"""
+
+draw.multiline_text(
+    (40,380),
+    descripcion,
+    fill="white",
+    font=texto,
+    spacing=8
+)
+
     draw.text(
         (30, 380),
         "2026",
@@ -93,6 +116,30 @@ def generar_brochure(top_authors):
         font=subtitulo
     )
 
+draw.rectangle(
+    (1020,90,1550,125),
+    fill="#0E5A8A"
+)
+
+draw.text(
+    (1040,100),
+    "DÍA        HORA          ACTIVIDAD",
+    fill="white",
+    font=texto
+)
+
+draw.rounded_rectangle(
+    (1450,180,1780,420),
+    radius=20,
+    fill="#F2F2F2"
+)
+
+draw.multiline_text(
+    (1490,230),
+    '"La inteligencia artificial\nno es el futuro,\nes el presente."',
+    fill="black",
+    font=subtitulo
+)
     # ---------- AUTORES ----------
     draw.text(
         (30, 450),
@@ -101,8 +148,8 @@ def generar_brochure(top_authors):
         font=subtitulo
     )
 
-    x = 30
-    y = 620
+    x = 40
+    y = 520
 
     for _, row in top_authors.iterrows():
 
