@@ -1,4 +1,7 @@
+import streamlit as st
+import pandas as pd
 import os
+
 from PIL import Image, ImageDraw, ImageFont
 from fpdf import FPDF
 
