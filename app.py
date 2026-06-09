@@ -1,5 +1,5 @@
-import streamlit as st
-import pandas as pd
+import os
+from PIL import Image, ImageDraw, ImageFont
 from fpdf import FPDF
 
 # --- CONFIGURACIÓN DE LA APP ---
@@ -8,6 +8,217 @@ st.title("📘 Automatización: Promoción de Evento Académico con IA")
 
 # --- SUBIR CSV ---
 uploaded_file = st.file_uploader("Sube el dataset (CSV con columnas Authors y Cited by)", type=["csv"])
+
+os.makedirs("generated", exist_ok=True)
+
+def generar_brochure(top_authors):
+
+    fondo = Image.new("RGB", (1600, 900), "#07233f")
+    draw = ImageDraw.Draw(fondo)
+
+    # ---------- IMÁGENES ----------
+    robot = Image.open("assets/robot_ai.png").convert("RGBA")
+    robot = robot.resize((500, 650))
+
+    usil = Image.open("assets/logo_usil.jpg")
+    usil = usil.resize((130, 130))
+
+    isil = Image.open("assets/logo_isil.png")
+    isil = isil.resize((130, 130))
+
+    google = Image.open("assets/google.png")
+    google = google.resize((150, 60))
+
+    microsoft = Image.open("assets/microsoft.png")
+    microsoft = microsoft.resize((150, 60))
+
+    ibm = Image.open("assets/ibm.png")
+    ibm = ibm.resize((120, 60))
+
+    fondo.paste(usil, (20, 20))
+    fondo.paste(isil, (170, 20))
+    fondo.paste(robot, (500, 100), robot)
+
+    # ---------- FUENTES ----------
+    try:
+        titulo = ImageFont.truetype("arial.ttf", 55)
+        subtitulo = ImageFont.truetype("arial.ttf", 28)
+        texto = ImageFont.truetype("arial.ttf", 20)
+    except:
+        titulo = ImageFont.load_default()
+        subtitulo = ImageFont.load_default()
+        texto = ImageFont.load_default()
+
+    # ---------- TÍTULO ----------
+    draw.text(
+        (30, 180),
+        "CONFERENCIA INTERNACIONAL DE",
+        fill="white",
+        font=subtitulo
+    )
+
+    draw.text(
+        (30, 230),
+        "MACHINE LEARNING",
+        fill="#00BFFF",
+        font=titulo
+    )
+
+    draw.text(
+        (30, 300),
+        "& ALGORITMOS PREDICTIVOS",
+        fill="#00BFFF",
+        font=titulo
+    )
+
+    draw.text(
+        (30, 380),
+        "2026",
+        fill="white",
+        font=subtitulo
+    )
+
+    # ---------- AUTORES ----------
+    draw.text(
+        (30, 450),
+        "EXPOSITORES PRINCIPALES",
+        fill="#00BFFF",
+        font=subtitulo
+    )
+
+    x = 30
+    y = 500
+
+    for _, row in top_authors.iterrows():
+
+        draw.rounded_rectangle(
+            (x, y, x+280, y+220),
+            radius=15,
+            outline="#00BFFF",
+            width=3
+        )
+
+        draw.text(
+            (x+15, y+15),
+            str(row["Authors"]),
+            fill="#00BFFF",
+            font=subtitulo
+        )
+
+        draw.text(
+            (x+15, y+80),
+            f"Publicaciones: {row['publicaciones']}",
+            fill="white",
+            font=texto
+        )
+
+        draw.text(
+            (x+15, y+120),
+            f"Citas: {row['citas']}",
+            fill="white",
+            font=texto
+        )
+
+        draw.text(
+            (x+15, y+160),
+            "Investigador destacado",
+            fill="white",
+            font=texto
+        )
+
+        x += 300
+
+    # ---------- AGENDA ----------
+    draw.text(
+        (1050, 70),
+        "AGENDA ACADÉMICA",
+        fill="#00BFFF",
+        font=subtitulo
+    )
+
+    agenda = [
+        "15 Abril - Inauguración",
+        "15 Abril - Conferencia Principal",
+        "16 Abril - IA y Ciencia de Datos",
+        "16 Abril - Casos de Éxito",
+        "17 Abril - Tendencias Futuras",
+        "17 Abril - Clausura"
+    ]
+
+    yy = 130
+
+    for item in agenda:
+
+        draw.rounded_rectangle(
+            (1020, yy, 1550, yy+45),
+            radius=10,
+            outline="#00BFFF"
+        )
+
+        draw.text(
+            (1040, yy+10),
+            item,
+            fill="white",
+            font=texto
+        )
+
+        yy += 60
+
+    # ---------- CERTIFICACIÓN ----------
+    draw.rounded_rectangle(
+        (1020, 520, 1550, 650),
+        radius=15,
+        outline="#00BFFF",
+        width=3
+    )
+
+    draw.text(
+        (1050, 550),
+        "CERTIFICACIÓN",
+        fill="#00BFFF",
+        font=subtitulo
+    )
+
+    draw.text(
+        (1050, 600),
+        "20 HORAS ACADÉMICAS",
+        fill="white",
+        font=texto
+    )
+
+    # ---------- SPONSORS ----------
+    draw.text(
+        (30, 790),
+        "CON EL RESPALDO DE",
+        fill="white",
+        font=subtitulo
+    )
+
+    fondo.paste(google, (30, 840))
+    fondo.paste(microsoft, (220, 840))
+    fondo.paste(ibm, (430, 840))
+
+    brochure = "generated/brochure.png"
+    fondo.save(brochure)
+
+    return brochure
+
+def generar_pdf_desde_imagen(imagen):
+
+    pdf = FPDF("L", "mm", "A4")
+    pdf.add_page()
+
+    pdf.image(
+        imagen,
+        x=0,
+        y=0,
+        w=297
+    )
+
+    archivo = "Brochure_Academico.pdf"
+    pdf.output(archivo)
+
+    return archivo
 
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
@@ -47,38 +258,28 @@ if uploaded_file:
         st.subheader("📄 Generar Brochure en PDF")
 
         def generar_pdf(df_top):
-            pdf = FPDF()
-            pdf.add_page()
-            pdf.set_font("Arial", 'B', 16)
-            pdf.cell(200, 10, "Conferencia Internacional de Machine Learning 2026", ln=True, align="C")
+           if st.button("Generar PDF"):
 
-            pdf.set_font("Arial", '', 12)
-            pdf.cell(0, 10, "Autores principales:", ln=True)
-            for _, row in df_top.iterrows():
-                autor = str(row['Authors'])
-                pubs = str(row['publicaciones'])
-                citas = str(row['citas'])
-                texto = f"{autor} - {pubs} publicaciones, {citas} citas"
-                pdf.cell(0, 10, texto, ln=True)
+    brochure = generar_brochure(top_authors)
 
-            pdf.ln(10)
-            pdf.cell(0, 10, "Institución: USIL & ISIL", ln=True)
-            pdf.cell(0, 10, "Sponsors: Google Cloud, Microsoft, IBM", ln=True)
-            pdf.cell(0, 10, "Certificación: 20 horas académicas", ln=True)
-            pdf.cell(0, 10, "Cronograma: Junio - Septiembre 2026", ln=True)
+    st.image(
+        brochure,
+        caption="Vista previa del brochure"
+    )
 
-            pdf.output("Brochure_Academico.pdf")
+    pdf_file = generar_pdf_desde_imagen(
+        brochure
+    )
 
-        if st.button("Generar PDF"):
-            generar_pdf(top_authors)
-            with open("Brochure_Academico.pdf", "rb") as f:
-                st.download_button(
-                    label="📥 Descargar Brochure",
-                    data=f,
-                    file_name="Brochure_Academico.pdf",
-                    mime="application/pdf"
-                )
-            st.success("✅ Brochure_Academico.pdf generado correctamente.")
+    with open(pdf_file, "rb") as f:
 
-    else:
-        st.error("El CSV debe contener las columnas 'Authors' y 'Cited by'.")
+        st.download_button(
+            label="📥 Descargar Brochure",
+            data=f,
+            file_name="Brochure_Academico.pdf",
+            mime="application/pdf"
+        )
+
+    st.success(
+        "✅ Brochure generado correctamente"
+    )
