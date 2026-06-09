@@ -254,22 +254,20 @@ if uploaded_file:
         top_authors = resumen_ordenado.head(3)
         st.success(f"Autores principales: {', '.join(top_authors['Authors'])}")
 
-        # --- GENERAR BROCHURE EN PDF ---
-        st.subheader("📄 Generar Brochure en PDF")
+       # --- GENERAR BROCHURE EN PDF ---
+st.subheader("📄 Generar Brochure en PDF")
 
-        def generar_pdf(df_top):
-           if st.button("Generar PDF"):
+if st.button("Generar PDF"):
 
     brochure = generar_brochure(top_authors)
 
     st.image(
         brochure,
-        caption="Vista previa del brochure"
+        caption="Vista previa del brochure",
+        use_container_width=True
     )
 
-    pdf_file = generar_pdf_desde_imagen(
-        brochure
-    )
+    pdf_file = generar_pdf_desde_imagen(brochure)
 
     with open(pdf_file, "rb") as f:
 
@@ -280,6 +278,4 @@ if uploaded_file:
             mime="application/pdf"
         )
 
-    st.success(
-        "✅ Brochure generado correctamente"
-    )
+    st.success("✅ Brochure generado correctamente.")
