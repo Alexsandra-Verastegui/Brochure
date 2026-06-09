@@ -16,12 +16,18 @@ os.makedirs("generated", exist_ok=True)
 
 def generar_brochure(top_authors):
 
-    fondo = Image.new("RGB", (1600, 900), "#07233f")
+    fondo = Image.new("RGB", (1800, 1000), "#062743")
     draw = ImageDraw.Draw(fondo)
+
+    for x in range(0, 1800, 50):
+    draw.line((x, 0, x, 1000), fill=(20, 60, 90), width=1)
+
+for y in range(0, 1000, 50):
+    draw.line((0, y, 1800, y), fill=(20, 60, 90), width=1)
 
     # ---------- IMÁGENES ----------
     robot = Image.open("assets/robot_ai.png").convert("RGBA")
-    robot = robot.resize((500, 650))
+    robot = robot.resize((720,900))
 
     usil = Image.open("assets/logo_usil.jpg")
     usil = usil.resize((130, 130))
@@ -38,10 +44,16 @@ def generar_brochure(top_authors):
     ibm = Image.open("assets/ibm.png")
     ibm = ibm.resize((120, 60))
 
-    fondo.paste(usil, (20, 20))
+    fondo.paste(usil, (25, 20))
     fondo.paste(isil, (170, 20))
-    fondo.paste(robot, (500, 100), robot)
+    fondo.paste(robot,(500,80),robot)
 
+    draw.rounded_rectangle(
+    (10, 10, 340, 150),
+    radius=20,
+    fill="#EAEAEA"
+)
+    
     # ---------- FUENTES ----------
     try:
         titulo = ImageFont.truetype("arial.ttf", 55)
@@ -90,12 +102,12 @@ def generar_brochure(top_authors):
     )
 
     x = 30
-    y = 500
+    y = 620
 
     for _, row in top_authors.iterrows():
 
         draw.rounded_rectangle(
-            (x, y, x+280, y+220),
+            (x, y, x+330, y+260),
             radius=15,
             outline="#00BFFF",
             width=3
@@ -257,28 +269,29 @@ if uploaded_file:
         top_authors = resumen_ordenado.head(3)
         st.success(f"Autores principales: {', '.join(top_authors['Authors'])}")
 
-       # --- GENERAR BROCHURE EN PDF ---
-st.subheader("📄 Generar Brochure en PDF")
+    # --- GENERAR BROCHURE EN PDF ---
+    st.subheader("📄 Generar Brochure en PDF")
 
-if st.button("Generar PDF"):
+    if st.button("Generar PDF"):
 
-    brochure = generar_brochure(top_authors)
+        brochure = generar_brochure(top_authors)
 
-    st.image(
-        brochure,
-        caption="Vista previa del brochure",
-        use_container_width=True
-    )
-
-    pdf_file = generar_pdf_desde_imagen(brochure)
-
-    with open(pdf_file, "rb") as f:
-
-        st.download_button(
-            label="📥 Descargar Brochure",
-            data=f,
-            file_name="Brochure_Academico.pdf",
-            mime="application/pdf"
+        st.image(
+            brochure,
+            caption="Vista previa del brochure",
+            use_container_width=True
         )
 
-    st.success("✅ Brochure generado correctamente.")
+        pdf_file = generar_pdf_desde_imagen(brochure)
+
+        with open(pdf_file, "rb") as f:
+
+            st.download_button(
+                label="📥 Descargar Brochure",
+                data=f,
+                file_name="Brochure_Academico.pdf",
+                mime="application/pdf"
+            )
+
+        st.success("✅ Brochure generado correctamente.")
+        
