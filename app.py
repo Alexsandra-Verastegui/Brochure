@@ -20,10 +20,10 @@ def generar_brochure(top_authors):
     draw = ImageDraw.Draw(fondo)
 
     for x in range(0, 1800, 50):
-    draw.line((x, 0, x, 1000), fill=(20, 60, 90), width=1)
+        draw.line((x, 0, x, 1000), fill=(20, 60, 90), width=1)
 
-for y in range(0, 1000, 50):
-    draw.line((0, y, 1800, y), fill=(20, 60, 90), width=1)
+    for y in range(0, 1000, 50):
+        draw.line((0, y, 1800, y), fill=(20, 60, 90), width=1)
 
     # ---------- IMÁGENES ----------
     robot = Image.open("assets/robot_ai.png").convert("RGBA")
